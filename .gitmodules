@@ -1,0 +1,3 @@
+[submodule "HoloFab/General"]
+	path = HoloFab/General
+	url = https://github.com/HoloFab/HoloFab2-Split-General.git
