@@ -4,8 +4,8 @@ This is the new structure for Grasshopper side of Holofab.
 
 Developed by (in alphabetical order):
 
-- Armin Akbari
-- Daniil Koshelyuk
-- Ardeshir Talaei
+- Akbari Armin
+- Koshelyuk Daniil
+- Talaei Ardeshir
 
 Special thanks to [IAAC](https://iaac.net/), where the project originated as part of our individual thesis and research projects.
