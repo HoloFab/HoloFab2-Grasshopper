@@ -1,6 +1,6 @@
-This is the new structure for Grasshopper side of Holofab. 
-
 # [HoloFab2](https://holofab.github.io/)
+
+This is the new structure for Grasshopper side of Holofab. 
 
 Developed by (in alphabetical order):
 
