@@ -8,4 +8,4 @@ Developed by (in alphabetical order):
 - Daniil Koshelyuk
 - Ardeshir Talaei
 
-Special thanks to [IAAC](https://iaac.net/), where the project originated as part of individual thesis and research projects.
+Special thanks to [IAAC](https://iaac.net/), where the project originated as part of our individual thesis and research projects.
