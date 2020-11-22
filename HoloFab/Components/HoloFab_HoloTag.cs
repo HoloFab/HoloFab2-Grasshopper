@@ -77,7 +77,7 @@ namespace HoloFab {
 					currentTextSizes.Add((float)Math.Round(currentSize/1000.0, 3));
 					currentTextColors.Add(EncodeUtilities.EncodeColor(currentColor));
 				}
-				TagData tags = new TagData(currentTexts, currentTextLocations, currentTextSizes, currentTextColors);
+				LabelData tags = new LabelData(currentTexts, currentTextLocations, currentTextSizes, currentTextColors);
                 
 				// Send tag data.
 				byte[] bytes = EncodeUtilities.EncodeData("HOLOTAG", tags, out string currentMessage);
@@ -99,12 +99,12 @@ namespace HoloFab {
 			DA.SetData(0, this.debugMessages[this.debugMessages.Count-1]);
 			#endif
 			
-			// Expire Solution.
-			if ((connect.status) && (connect.PendingMessages)) {
-				GH_Document document = this.OnPingDocument();
-				if (document != null)
-					document.ScheduleSolution(HoloTag.expireDelay, ScheduleCallback);
-			}
+			//// Expire Solution.
+			//if ((connect.status) && (connect.PendingMessages)) {
+			//	GH_Document document = this.OnPingDocument();
+			//	if (document != null)
+			//		document.ScheduleSolution(HoloTag.expireDelay, ScheduleCallback);
+			//}
 		}
 		private void ScheduleCallback(GH_Document document) {
 			ExpireSolution(false);

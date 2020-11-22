@@ -62,12 +62,12 @@ namespace HoloFab {
 			DA.SetData(0, RobotStreaming.debugMessages[RobotStreaming.debugMessages.Count-1]);
 			#endif
 			
-			// Expire Solution.
-			if ((connect.status) && (connect.PendingMessages)) {
-				GH_Document document = this.OnPingDocument();
-				if (document != null)
-					document.ScheduleSolution(RobotStreaming.expireDelay, ScheduleCallback);
-			}
+			//// Expire Solution.
+			//if ((connect.status) && (connect.PendingMessages)) {
+			//	GH_Document document = this.OnPingDocument();
+			//	if (document != null)
+			//		document.ScheduleSolution(RobotStreaming.expireDelay, ScheduleCallback);
+			//}
 		}
 		private void ScheduleCallback(GH_Document document) {
 			ExpireSolution(false);

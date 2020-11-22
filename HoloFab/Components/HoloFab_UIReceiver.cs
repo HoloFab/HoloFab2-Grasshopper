@@ -90,12 +90,12 @@ namespace HoloFab {
 			DA.SetData(3, this.debugMessages[this.debugMessages.Count-1]);
 			#endif
             
-			// Expire Solution.
-			if (connect.status) {
-				GH_Document document = this.OnPingDocument();
-				if (document != null)
-					document.ScheduleSolution(UIReceiver.expireDelay, ScheduleCallback);
-			}
+			//// Expire Solution.
+			//if (connect.status) {
+			//	GH_Document document = this.OnPingDocument();
+			//	if (document != null)
+			//		document.ScheduleSolution(UIReceiver.expireDelay, ScheduleCallback);
+			//}
 		}
 		private void ScheduleCallback(GH_Document document) {
 			ExpireSolution(false);

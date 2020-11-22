@@ -9,7 +9,6 @@ using System.Drawing;
 using Rhino.Geometry;
 using Grasshopper.Kernel;
 using Newtonsoft.Json;
-using System;
 
 using HoloFab.CustomData;
 
@@ -93,12 +92,12 @@ namespace HoloFab {
 			DA.SetData(0, this.debugMessages[this.debugMessages.Count-1]);
 			#endif
 			
-			// Expire Solution.
-			if ((connect.status) && (connect.PendingMessages)) {
-				GH_Document document = this.OnPingDocument();
-				if (document != null)
-					document.ScheduleSolution(MeshStreaming.expireDelay, ScheduleCallback);
-			}
+			//// Expire Solution.
+			//if ((connect.status) && (connect.PendingMessages)) {
+			//	GH_Document document = this.OnPingDocument();
+			//	if (document != null)
+			//		document.ScheduleSolution(MeshStreaming.expireDelay, ScheduleCallback);
+			//}
 		}
 		private void ScheduleCallback(GH_Document document) {
 			ExpireSolution(false);
