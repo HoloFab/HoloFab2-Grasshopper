@@ -1,3 +1,3 @@
-HoloFab/obj/*
-HoloFab/Properties/*
-.vs/*
+HoloFab/obj/**
+HoloFab/Properties/**
+.vs/**

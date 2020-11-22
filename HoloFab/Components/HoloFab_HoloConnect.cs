@@ -22,12 +22,13 @@ namespace HoloFab {
 		//////////////////////////////////////////////////////////////////////////
 		// - default settings
 		private string defaultIP = "127.0.0.1";
-		// - settings
-		// If messages in queues - expire solution after this time.
-		//private static int expireDelay = 40;
-		public bool status = false;
+        // - settings
+        // If messages in queues - expire solution after this time.
+        private static int expireDelay = 40;
+        public bool status = false;
 		private Connection connect;
 		public static FindServer deviceFinder;
+
 		// - debugging
 		#if DEBUG
 		private string sourceName = "HoloConnect Component";
@@ -59,8 +60,9 @@ namespace HoloFab {
 			if (this.status) {
 				// Start connections
 				bool success = this.connect.Connect();
-				if (success)
+				if (success) { 
 					this.connect.TransmitIP();
+				}
 				string message = (success) ? "Connection established." : "Connection failed, please check your network connection and try again.";
 				UniversalDebug(message, (success) ? GH_RuntimeMessageLevel.Remark : GH_RuntimeMessageLevel.Error);
 			} else {
@@ -73,15 +75,15 @@ namespace HoloFab {
 			DA.SetData(1, this.debugMessages[this.debugMessages.Count-1]);
 			#endif
 			
-		//	// Expire Solution.
-		//	if ((connect.status) && (connect.PendingMessages)) {
-		//		GH_Document document = this.OnPingDocument();
-		//		if (document != null)
-		//			document.ScheduleSolution(HoloConnect.expireDelay, ScheduleCallback);
-		//	}
-		//}
-		//private void ScheduleCallback(GH_Document document) {
-		//	ExpireSolution(false);
+			// Expire Solution.
+			if ((connect.status) && (connect.PendingMessages)) {
+				GH_Document document = this.OnPingDocument();
+				if (document != null)
+					document.ScheduleSolution(HoloConnect.expireDelay, ScheduleCallback);
+			}
+		}
+		private void ScheduleCallback(GH_Document document) {
+			ExpireSolution(false);
 		}
 		//////////////////////////////////////////////////////////////////////////
 		/// <summary>
