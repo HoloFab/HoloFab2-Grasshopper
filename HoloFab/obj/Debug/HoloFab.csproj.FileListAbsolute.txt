@@ -1,8 +1,0 @@
-C:\_UserFiles\1_Work\30_HoloFab\HoloFabGrasshopperRestructured\HoloFab\obj\Debug\HoloFab.Properties.Resources.resources
-C:\_UserFiles\1_Work\30_HoloFab\HoloFabGrasshopperRestructured\HoloFab\obj\Debug\HoloFab.csproj.GenerateResource.cache
-C:\_UserFiles\1_Work\30_HoloFab\HoloFabGrasshopperRestructured\HoloFab\obj\Debug\HoloFab.csproj.CoreCompileInputs.cache
-C:\Users\Daniil\AppData\Roaming\Grasshopper\Libraries\HoloFab.dll
-C:\Users\Daniil\AppData\Roaming\Grasshopper\Libraries\HoloFab.pdb
-C:\_UserFiles\1_Work\30_HoloFab\HoloFabGrasshopperRestructured\HoloFab\obj\Debug\HoloFab.csproj.CopyComplete
-C:\_UserFiles\1_Work\30_HoloFab\HoloFabGrasshopperRestructured\HoloFab\obj\Debug\HoloFab.dll
-C:\_UserFiles\1_Work\30_HoloFab\HoloFabGrasshopperRestructured\HoloFab\obj\Debug\HoloFab.pdb
