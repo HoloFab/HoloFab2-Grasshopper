@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HoloFab</RootNamespace>
     <AssemblyName>HoloFab</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkProfile />
@@ -39,24 +39,6 @@
     </Win32Resource>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Eto, Version=2.3.6591.18824, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
-      <HintPath>..\packages\RhinoCommon.6.0.18016.23451\lib\net45\Eto.dll</HintPath>
-    </Reference>
-    <Reference Include="GH_IO, Version=6.0.18016.23451, Culture=neutral, PublicKeyToken=6a29997d2e6b4f97, processorArchitecture=MSIL">
-      <HintPath>..\packages\Grasshopper.6.0.18016.23451\lib\net45\GH_IO.dll</HintPath>
-    </Reference>
-    <Reference Include="Grasshopper, Version=6.0.18016.23451, Culture=neutral, PublicKeyToken=dda4f5ec2cd80803, processorArchitecture=MSIL">
-      <HintPath>..\packages\Grasshopper.6.0.18016.23451\lib\net45\Grasshopper.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Rhino.UI, Version=6.0.18016.23451, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
-      <HintPath>..\packages\RhinoCommon.6.0.18016.23451\lib\net45\Rhino.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="RhinoCommon, Version=6.0.18016.23451, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
-      <HintPath>..\packages\RhinoCommon.6.0.18016.23451\lib\net45\RhinoCommon.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -66,27 +48,37 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\HoloFabConnectedComponent.cs" />
+    <Compile Include="General\Scripts\Network\NetworkAgent.cs" />
+    <Compile Include="General\Scripts\Network\Specific\ClientAcknowledger.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
-          <AutoGen>True</AutoGen>
-          <DesignTime>True</DesignTime>
-          <DependentUpon>Resources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="General\Scripts\Network\FindServer.cs" />
+    <Compile Include="General\Scripts\Network\TCPAgent.cs" />
     <Compile Include="General\Scripts\Network\TCPSend.cs" />
     <Compile Include="General\Scripts\Network\TCPReceive.cs" />
+    <Compile Include="General\Scripts\Network\UDPAgent.cs" />
     <Compile Include="General\Scripts\Network\UDPSend.cs" />
+    <Compile Include="General\Scripts\Network\UDPBroadcast.cs" />
     <Compile Include="General\Scripts\Network\UDPReceive.cs" />
+    <Compile Include="General\Scripts\Network\Specific\ClientFinder.cs" />
+    <Compile Include="General\Scripts\Network\Specific\ClientUpdater.cs" />
     <Compile Include="General\Scripts\Types\CustomData.cs" />
     <Compile Include="General\Scripts\Types\CustomNetowork.cs" />
     <Compile Include="General\Scripts\Types\CustomRobot.cs" />
+    <Compile Include="General\Scripts\Types\CustomRobot_unityonly.cs" />
     <Compile Include="General\Scripts\Types\CustomClient.cs" />
-    <Compile Include="General\Scripts\Types\ThreadInterface.cs" />
+    <Compile Include="General\Scripts\Types\HoloSystemState.cs" />
+    <Compile Include="General\Scripts\Types\TaskInterface.cs" />
+    <Compile Include="General\Scripts\Types\Type_Manager.cs" />
     <Compile Include="General\Scripts\Utilities\EncodeUtilities.cs" />
     <Compile Include="General\Scripts\Utilities\DebugUtilities.cs" />
     <Compile Include="General\Scripts\Utilities\MeshUtilities.cs" />
     <Compile Include="General\Scripts\Utilities\NetworkUtilities.cs" />
-    <Compile Include="Components\HoloFab_Info.cs" />
+    <Compile Include="HoloFab_Info.cs" />
     <Compile Include="Components\HoloFab_HoloConnect.cs" />
     <Compile Include="Components\HoloFab_HoloTag.cs" />
     <Compile Include="Components\HoloFab_MeshStreaming.cs" />
@@ -94,9 +86,6 @@
     <Compile Include="Components\HoloFab_HoloBot.cs" />
     <Compile Include="Components\HoloFab_HoloBot_Streaming.cs" />
     <Compile Include="Components\HoloFab_HoloBot_Controller.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -129,6 +118,23 @@
   <ItemGroup>
     <None Include="Resources\HoloFab_UIReceiver.png" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Grasshopper">
+      <Version>7.20.22193.9001</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="QRCoder">
+      <Version>1.3.5</Version>
+    </PackageReference>
+    <PackageReference Include="RhinoCommon">
+      <Version>7.20.22193.9001</Version>
+    </PackageReference>
+    <PackageReference Include="Zen.Barcode.Rendering.Framework">
+      <Version>3.1.10729.1</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -145,18 +151,9 @@ Erase "$(TargetPath)"</PostBuildEvent>
     <FallbackCulture>en-US</FallbackCulture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartProgram>C:\Program Files\Rhino 6\System\Rhino.exe</StartProgram>
+    <StartProgram>C:\Program Files\Rhino 7\System\Rhino.exe</StartProgram>
     <StartArguments>
     </StartArguments>
     <StartAction>Program</StartAction>
   </PropertyGroup>
-  <Import Project="..\packages\RhinoCommon.6.0.18016.23451\build\net45\RhinoCommon.targets" Condition="Exists('..\packages\RhinoCommon.6.0.18016.23451\build\net45\RhinoCommon.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\RhinoCommon.6.0.18016.23451\build\net45\RhinoCommon.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RhinoCommon.6.0.18016.23451\build\net45\RhinoCommon.targets'))" />
-    <Error Condition="!Exists('..\packages\Grasshopper.6.0.18016.23451\build\net45\Grasshopper.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Grasshopper.6.0.18016.23451\build\net45\Grasshopper.targets'))" />
-  </Target>
-  <Import Project="..\packages\Grasshopper.6.0.18016.23451\build\net45\Grasshopper.targets" Condition="Exists('..\packages\Grasshopper.6.0.18016.23451\build\net45\Grasshopper.targets')" />
 </Project>

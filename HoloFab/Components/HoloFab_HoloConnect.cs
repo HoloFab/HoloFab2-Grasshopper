@@ -13,8 +13,6 @@ using Grasshopper.GUI.Canvas;
 using Grasshopper.Kernel.Attributes;
 
 using HoloFab.CustomData;
-using System.Net;
-using System.Net.Sockets;
 
 namespace HoloFab {
 	// A HoloFab class to create Connection object used in other HoloFab components.
@@ -24,15 +22,15 @@ namespace HoloFab {
 		private string defaultIP = "127.0.0.1";
         // - settings
         // If messages in queues - expire solution after this time.
-        private static int expireDelay = 40;
-        public bool status = false;
-		private Connection connect;
-		public static FindServer deviceFinder;
+        private readonly int expireDelay = 40;
+
+		public ClientFinder deviceFinder;
+		public HoloConnection connect;
 
 		// - debugging
 		#if DEBUG
 		private string sourceName = "HoloConnect Component";
-		public static List<string> debugMessages = new List<string>();
+		public List<string> debugMessages = new List<string>();
 		#endif
         
 		/// <summary>
@@ -40,31 +38,43 @@ namespace HoloFab {
 		/// </summary>
 		/// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
 		protected override void SolveInstance(IGH_DataAccess DA) {
-			if (HoloConnect.deviceFinder == null) {
-				HoloConnect.deviceFinder = new FindServer();
-				HoloConnect.deviceFinder.StartScanning();
+			if (this.deviceFinder == null) {
+                this.deviceFinder = new ClientFinder(this);
+                this.deviceFinder.StartReceiving();
 			}
 			// Get inputs.
 			string remoteIP = this.defaultIP;
 			if (!DA.GetData(0, ref remoteIP)) return;
 			//////////////////////////////////////////////////////
 			if (this.connect == null) // New Connection.
-				this.connect = new Connection(remoteIP);
+				this.connect = new HoloConnection(this, remoteIP);
 			else if (this.connect.remoteIP != remoteIP) {
 				// If IP Changed first Disconnect the old one.
 				this.connect.Disconnect();
-				this.connect = new Connection(remoteIP);
+				this.connect = new HoloConnection(this, remoteIP);
 			}
 
-			this.connect.status = this.status;
-			if (this.status) {
-				// Start connections
-				bool success = this.connect.Connect();
-				if (success) { 
-					this.connect.TransmitIP();
+			if (this.connect.status) {
+				if (!this.deviceFinder.devices.ContainsKey(remoteIP)) { 
+					this.connect.Disconnect();
+					//ExpireSolution(false);
+
+					string message = "Client not found.";
+					GH_RuntimeMessageLevel messageType = GH_RuntimeMessageLevel.Error;
+					UniversalDebug(message, messageType);
+				} else {
+					this.connect.SetupUpdate();
+					//// Start connections
+					///// Now managed by the acknowleger
+					//bool success = this.connect.Connect();
+					//string message = (success)
+					//	? "Connection established."
+					//	: "Connection failed, please check your network connection and try again.";
+					//GH_RuntimeMessageLevel messageType = (success)
+					//	? GH_RuntimeMessageLevel.Remark
+					//	: GH_RuntimeMessageLevel.Error;
+					//UniversalDebug(message, messageType);
 				}
-				string message = (success) ? "Connection established." : "Connection failed, please check your network connection and try again.";
-				UniversalDebug(message, (success) ? GH_RuntimeMessageLevel.Remark : GH_RuntimeMessageLevel.Error);
 			} else {
 				this.connect.Disconnect();
 			}
@@ -72,19 +82,25 @@ namespace HoloFab {
 			// Output.
 			DA.SetData(0, this.connect);
 			#if DEBUG
-			DA.SetData(1, this.debugMessages[this.debugMessages.Count-1]);
+			if (this.debugMessages.Count > 0)
+				DA.SetData(1, this.debugMessages[this.debugMessages.Count-1]);
 			#endif
 			
 			// Expire Solution.
-			if ((connect.status) && (connect.PendingMessages)) {
-				GH_Document document = this.OnPingDocument();
+			if (connect.status) {//((connect.status) && (connect.MessagesAvailable)) {
+                GH_Document document = this.OnPingDocument();
 				if (document != null)
-					document.ScheduleSolution(HoloConnect.expireDelay, ScheduleCallback);
+					document.ScheduleSolution(this.expireDelay, ScheduleCallback);
 			}
 		}
 		private void ScheduleCallback(GH_Document document) {
-			ExpireSolution(false);
-		}
+			if (this.deviceFinder.flagUpdate) {
+				ExpireSolution(true);
+                Instances.InvalidateCanvas();
+				this.deviceFinder.flagUpdate = false;
+            } else
+				ExpireSolution(false);
+        }
 		//////////////////////////////////////////////////////////////////////////
 		/// <summary>
 		/// Initializes a new instance of the CreateConnection class.
@@ -182,25 +198,34 @@ namespace HoloFab {
 			base.Render(canvas, graphics, channel);
 			// Add custom elements.
 			if (channel == GH_CanvasChannel.Objects) {
-				// Add button to connect/disconect.
-				GH_Capsule button = GH_Capsule.CreateTextCapsule(this.BoundsButton, this.BoundsButton,GH_Palette.Black,
-				                                                 this.component.status ? "Disconnect" : "Connect", 2, 0);
-				button.Render(graphics, this.Selected, this.Owner.Locked, false);
-				button.Dispose();
-                
 				// Add list of Found Devices.
 				// IPAddress ipv4Addresse = Array.FindLast(Dns.GetHostEntry(string.Empty).AddressList,
 				//                                         a => a.AddressFamily == AddressFamily.InterNetwork);
-				if (HoloConnect.deviceFinder != null) { 
+				if (this.component.deviceFinder != null) { 
                     string message = "Devices: ";
-				    if (HoloConnect.deviceFinder.devices.Count > 0)
-					    foreach (HoloDevice device in HoloConnect.deviceFinder.devices.Values)
+					if (this.component.deviceFinder.devices.Count > 0) { 
+					    foreach (HoloDevice device in this.component.deviceFinder.devices.Values)
 						    message += "\n" + device.ToString();
+					}
 				    else
 					    message += "(not found)";
 				    graphics.DrawString(message, GH_FontServer.NewFont(FontFamily.GenericMonospace, 6, FontStyle.Regular),
 				                        Brushes.Black, this.BoundsText, GH_TextRenderingConstants.CenterCenter);
-                }
+					//// if client not visible - disconnect
+					//if ((this.component.connect != null) 
+					//	&& (this.component.connect.status) 
+					//	&& (!HoloConnect.deviceFinder.devices.ContainsKey(this.component.connect.remoteIP))) {
+					//	this.component.connect.Disconnect();
+					//	this.component.ExpireSolution(true);
+					//}
+				}
+				// Add button to connect/disconect.
+				if (this.component.connect != null) { 
+					GH_Capsule button = GH_Capsule.CreateTextCapsule(this.BoundsButton, this.BoundsButton, GH_Palette.Black,
+																 this.component.connect.status ? "Disconnect" : "Connect", 2, 0);
+					button.Render(graphics, this.Selected, this.Owner.Locked, false);
+					button.Dispose();
+				}
 			}
 		}
 		public override GH_ObjectResponse RespondToMouseDown(GH_Canvas sender,
@@ -209,9 +234,11 @@ namespace HoloFab {
 			if (canvasMouseEvent.Button == System.Windows.Forms.MouseButtons.Left) {
 				System.Drawing.RectangleF boundsButton = this.BoundsButton;
 				if (boundsButton.Contains(canvasMouseEvent.CanvasLocation)) {
-					this.component.status = !this.component.status;
-					this.component.ExpireSolution(true);
-					return GH_ObjectResponse.Handled;
+					if (this.component.connect != null) {
+						this.component.connect.status = !this.component.connect.status;
+						this.component.ExpireSolution(true);
+						return GH_ObjectResponse.Handled;
+					}
 				}
 			}
 			// If not - perform normal reaction.

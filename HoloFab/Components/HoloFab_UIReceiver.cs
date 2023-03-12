@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using HoloFab.CustomData;
 
 namespace HoloFab {
+	/*
 	// A HoloFab class to receive UI elements from AR device.
 	public class UIReceiver : GH_Component {
 		//////////////////////////////////////////////////////////////////////////
@@ -22,7 +23,8 @@ namespace HoloFab {
 		private static string lastInputs;
 		//private static bool flagProcessed = false;
 		// - settings
-		private static int expireDelay = 40;
+		//// If messages in queues - expire solution after this time.
+		//private static int expireDelay = 40;
 		// - debugging
 		#if DEBUG
 		private string sourceName = "UI Receiving Component";
@@ -35,7 +37,7 @@ namespace HoloFab {
 		/// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
 		protected override void SolveInstance(IGH_DataAccess DA) {
 			// Get inputs.
-			Connection connect = null;
+			HoloConnection connect = null;
 			if (!DA.GetData(0, ref connect)) return;
 			//////////////////////////////////////////////////////
 			// Process data.
@@ -43,8 +45,9 @@ namespace HoloFab {
 				// If connection open start acting.
 				// Prepare to receive UI data.
 				try {
-					if (connect.udpReceiver.dataMessages.Count > 0) {
-						UIReceiver.currentInput = connect.udpReceiver.dataMessages.Peek();
+					if (connect.MessagesAvailable) {
+                        // TODO restructure to use HoloFabConnectedComponent
+                        UIReceiver.currentInput = connect.LastMessage(-1);// this.communicatorID);
 						UIReceiver.currentInput = EncodeUtilities.StripSplitter(UIReceiver.currentInput);
 						if (UIReceiver.lastInputs != UIReceiver.currentInput) {
 							UIReceiver.lastInputs = UIReceiver.currentInput;
@@ -60,7 +63,7 @@ namespace HoloFab {
 									UIReceiver.currentInts = new List<int> (data.ints);
 									UIReceiver.currentFloats = new List<float> (data.floats);
 									UniversalDebug("Data Received!");
-									connect.udpReceiver.dataMessages.Dequeue(); // Actually remove from the queue since it has been processed.
+									//connect.udpReceiver.dataMessages.Dequeue(); // Actually remove from the queue since it has been processed.
 								}
 								// else
 								//	UniversalDebug("Header Not Recognized!", GH_RuntimeMessageLevel.Warning);
@@ -154,4 +157,5 @@ namespace HoloFab {
 			this.AddRuntimeMessage(messageType, message);
 		}
 	}
+	*/
 }

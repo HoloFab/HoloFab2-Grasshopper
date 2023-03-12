@@ -12,6 +12,7 @@ using Grasshopper.Kernel.Special;
 using HoloFab.CustomData;
 
 namespace HoloFab {
+	/*
 	// A HoloFab class to create Robot object used in other HoloFab components.
 	public class HoloBot : GH_Component {
 		//////////////////////////////////////////////////////////////////////////
@@ -24,7 +25,7 @@ namespace HoloFab {
 		private string sourceName = "HoloBot Component";
 		public List<string> debugMessages = new List<string>();
 		#endif
-        
+
 		/// <summary>
 		/// This is the method that actually does the work.
 		/// </summary>
@@ -64,8 +65,8 @@ namespace HoloFab {
 		/// </summary>
 		public HoloBot()
 			: base("HoloBot", "HB",
-			       "Create Holographic Robot",
-			       "HoloFab", "HoloBot") {}
+				   "Create Holographic Robot",
+				   "HoloFab", "HoloBot") {}
 		/// <summary>
 		/// Provides an Icon for every component that will be visible in the User Interface.
 		/// Icons need to be 24x24 pixels.
@@ -133,4 +134,5 @@ namespace HoloFab {
 			this.AddRuntimeMessage(messageType, message);
 		}
 	}
+	*/
 }

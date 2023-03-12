@@ -12,13 +12,14 @@ using System.Text;
 using HoloFab.CustomData;
 
 namespace HoloFab {
+	/*
 	public class RobotStreaming : GH_Component {
 		//////////////////////////////////////////////////////////////////////////
 		// - history
 		private string lastMessage = string.Empty;
 		// - settings
-		// If messages in queues - expire solution after this time.
-		private static int expireDelay = 40;
+		//// If messages in queues - expire solution after this time.
+		//private static int expireDelay = 40;
 		// force messages despite memory or no
 		private bool flagForce = false;
 		// - debugging
@@ -45,7 +46,8 @@ namespace HoloFab {
 				// Send robot data.
 				byte[] bytes = EncodeUtilities.EncodeData("HOLOBOTS", inputRobots.ToArray(), out string currentMessage);
 				if (this.flagForce || (this.lastMessage != currentMessage)) {
-					connect.tcpSender.QueueUpData(bytes);
+					connect.QueueUpData(SourceType.TCP, bytes);
+					//connect.tcpSender.QueueUpData(bytes);
 					//bool success = connect.tcpSender.flagSuccess;
 					//string message = connect.tcpSender.debugMessages[connect.tcpSender.debugMessages.Count-1];
 					//if (success)
@@ -123,4 +125,5 @@ namespace HoloFab {
 			this.AddRuntimeMessage(messageType, message);
 		}
 	}
+	*/
 }

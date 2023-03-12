@@ -13,13 +13,14 @@ using Newtonsoft.Json;
 using HoloFab.CustomData;
 
 namespace HoloFab {
+	/*
 	public class Controller : GH_Component {
 		//////////////////////////////////////////////////////////////////////////
 		// - history
 		private string lastMessage = string.Empty;
 		// - settings
-		// If messages in queues - expire solution after this time.
-		private static int expireDelay = 40;
+		//// If messages in queues - expire solution after this time.
+		//private static int expireDelay = 40;
 		// force messages despite memory or no
 		private bool flagForce = true;
 		// - debugging
@@ -71,7 +72,7 @@ namespace HoloFab {
 				// Send robot controller data.
 				byte[] bytes = EncodeUtilities.EncodeData("CONTROLLER", robotControllers, out string currentMessage);
 				if (this.flagForce || (this.lastMessage != currentMessage)) {
-					connect.udpSender.QueueUpData(bytes);
+					connect.QueueUpData(SourceType.UDP, bytes);
 					//bool success = connect.udpSender.success;
 					//string message = connect.udpSender.debugMessages[connect.udpSender.debugMessages.Count-1];
 					//if (success)
@@ -149,4 +150,5 @@ namespace HoloFab {
 			this.AddRuntimeMessage(messageType, message);
 		}
 	}
+	*/
 }
