@@ -40,6 +40,7 @@ namespace HoloFab {
 		protected override void SolveInstance(IGH_DataAccess DA) {
 			if (this.deviceFinder == null) {
                 this.deviceFinder = new ClientFinder(this);
+				this.deviceFinder.Connect();
                 this.deviceFinder.StartReceiving();
 			}
 			// Get inputs.
