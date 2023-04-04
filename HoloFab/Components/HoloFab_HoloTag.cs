@@ -99,6 +99,7 @@ namespace HoloFab {
 				this.connect.RefreshOwner();
 			}
 		} 
+		public override void Reset() { }
 		public override void SetOutputs(IGH_DataAccess DA) { }
         //////////////////////////////////////////////////////////////////////////
 		protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {

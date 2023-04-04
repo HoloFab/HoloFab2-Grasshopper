@@ -43,7 +43,7 @@ namespace HoloFab {
 		protected HoloConnection connect = null;
 		protected bool wasConnected = false;
 		protected bool flagForce = false; // force messages even if they haven't changed
-		protected override void BeforeSolveInstance() {
+        protected override void BeforeSolveInstance() {
 			base.BeforeSolveInstance();
 			if (this.wasConnected) {
 				if (this.connect != null) {
@@ -61,6 +61,7 @@ namespace HoloFab {
 
 		public abstract bool GetInputs(IGH_DataAccess DA);
 		public abstract void Solve();
+		public abstract void Reset();
 		public abstract void SetOutputs(IGH_DataAccess DA);
 		/// <summary>
 		/// This is the method that actually does the work.
@@ -76,6 +77,7 @@ namespace HoloFab {
 			if (this.connect.status) {
 				Solve();
 			} else {
+				Reset();
 				this.wasConnected = false;
 				this.communicatorID = -1;
 				this.lastMessage = string.Empty;
@@ -140,9 +142,64 @@ namespace HoloFab {
 			pManager.AddTextParameter("Debug", "D", "Debug console.", GH_ParamAccess.item);
 			#endif
 		}
-		//////////////////////////////////////////////////////////////////////////
-		#region ADDITIONAL
-		protected bool TryGetHoloConnect(IGH_DataAccess DA) {
+
+        //////////////////////////////////////////////////////////////////////////
+        #region RECEIVE
+        protected virtual List<string> validHeaders { get; }
+        protected string lastData;
+		protected Queue<string> receiveQueue = new Queue<string>();
+        protected bool MessagesAvailable{
+            get {
+                // TODO: Check if any messages are available on any network agent.
+                return this.receiveQueue.Count > 0;
+            }
+        }
+        protected void OnDataReceived(object sender, DataReceivedArgs data) {
+			// TODO restructure to use HoloFabConnectedComponent
+			string currentInput = data.data;
+			UniversalDebug("New Message without Message Splitter removed: " + currentInput);
+			string[] messageComponents = currentInput.Split(
+				new string[] { EncodeUtilities.headerSplitter }, 2, 
+				StringSplitOptions.RemoveEmptyEntries);
+			if (messageComponents.Length > 1) {
+				string header = messageComponents[0], content = messageComponents[1];
+				UniversalDebug("Header: " + header + ", content: " + content);
+				if (this.validHeaders.Contains(header)) {
+					lock (this.receiveQueue){
+						this.receiveQueue.Enqueue(content);
+					}
+                } else
+					UniversalDebug("Header Not Recognized!", GH_RuntimeMessageLevel.Warning);
+			} else
+				UniversalDebug("Improper Message!", GH_RuntimeMessageLevel.Warning);
+    }
+		protected void NetworkReceiveSolve() {
+            // Prepare to receive UI data.
+            try {
+                if (this.MessagesAvailable)  {
+                    string currentData = string.Empty;
+                    lock (this.receiveQueue) {
+                        currentData = this.receiveQueue.Dequeue();
+                    }
+                    if (this.lastData != currentData) {
+                        this.lastData = currentData;
+                        ProcessNetworkInput(currentData);
+                    }
+                }
+            }
+            catch (Exception exception) {
+                UniversalDebug("Error Processing Data: exception: " + exception.ToString(), GH_RuntimeMessageLevel.Error);
+            }
+        }
+		public virtual void ProcessNetworkInput(string input) { }
+		protected void ResetReceive() {
+			this.receiveQueue = new Queue<string>();
+            this.lastData = string.Empty;
+        }
+        #endregion
+        //////////////////////////////////////////////////////////////////////////
+        #region ADDITIONAL
+        protected bool TryGetHoloConnect(IGH_DataAccess DA) {
 			if (!DA.GetData<HoloConnection>(0, ref this.connect)) return false;
 			else if (!this.wasConnected) {
 				this.wasConnected = true;
@@ -153,6 +210,10 @@ namespace HoloFab {
 		protected void TryUpdateCommunicationData() {
 			if ((this.communicatorID == -1) && this.connect.status) {
 				this.communicatorID = this.connect.RegisterAgent(this.communicationProtocolType, this.communicationType);
+				if (this.communicationType == SourceCommunicationType.Receiver
+					|| this.communicationType == SourceCommunicationType.SenderReceiver) {
+					this.connect.RegisterReceiverCallback(this.communicatorID, OnDataReceived);
+                }
 				this.connect.RefreshOwner();
 			}
 		}

@@ -10,152 +10,74 @@ using Newtonsoft.Json;
 using HoloFab.CustomData;
 
 namespace HoloFab {
-	/*
 	// A HoloFab class to receive UI elements from AR device.
-	public class UIReceiver : GH_Component {
-		//////////////////////////////////////////////////////////////////////////
-		// - currents
-		private static string currentInput;
-		private static List<bool> currentBools = new List<bool>();
-		private static List<int> currentInts = new List<int>();
-		private static List<float> currentFloats = new List<float>();
-		// - history
-		private static string lastInputs;
-		//private static bool flagProcessed = false;
-		// - settings
-		//// If messages in queues - expire solution after this time.
-		//private static int expireDelay = 40;
+	public class UIReceiver : HoloFabConnectedComponent {
+        #region DEFAULT
+        //////////////////////////////////////////////////////////////////////////
+        // NECESSARY COMPONENT VARIABLES
+        protected static string componentName = "UI Receiver",
+			componentNickname = "UI",
+			componentDescription = "Receieves Incoming data from the User Interface of AR device",
+			componentCategory = "HoloFab",
+			componentSubCategory = "UserInterface";
+        protected override string componentGUID { get { return "ac5f5de3-cdf2-425a-b435-c97b718e1a09"; } }
+		protected override System.Drawing.Bitmap componentIcon { get { return Properties.Resources.HoloFab_UIReceiver; } }
+		protected override SourceCommunicationType communicationType { get { return SourceCommunicationType.Receiver; } }
+		protected override bool allowProtocolChanging { get { return false; } }
 		// - debugging
 		#if DEBUG
-		private string sourceName = "UI Receiving Component";
-		public static List<string> debugMessages = new List<string>();
+		protected override string sourceName { get { return "UI Receiving Component"; } }
 		#endif
-        
-		/// <summary>
-		/// This is the method that actually does the work.
-		/// </summary>
-		/// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
-		protected override void SolveInstance(IGH_DataAccess DA) {
-			// Get inputs.
-			HoloConnection connect = null;
-			if (!DA.GetData(0, ref connect)) return;
-			//////////////////////////////////////////////////////
-			// Process data.
-			if (connect.status) {
-				// If connection open start acting.
-				// Prepare to receive UI data.
-				try {
-					if (connect.MessagesAvailable) {
-                        // TODO restructure to use HoloFabConnectedComponent
-                        UIReceiver.currentInput = connect.LastMessage(-1);// this.communicatorID);
-						UIReceiver.currentInput = EncodeUtilities.StripSplitter(UIReceiver.currentInput);
-						if (UIReceiver.lastInputs != UIReceiver.currentInput) {
-							UIReceiver.lastInputs = UIReceiver.currentInput;
-							UniversalDebug("New Message without Message Splitter removed: " + currentInput);
-							string[] messageComponents = UIReceiver.currentInput.Split(new string[] {EncodeUtilities.headerSplitter}, 2, StringSplitOptions.RemoveEmptyEntries);
-							if (messageComponents.Length > 1) {
-								string header = messageComponents[0], content = messageComponents[1];
-								UniversalDebug("Header: " + header + ", content: " + content);
-								if (header == "UIDATA") {
-									// If any new data received - process it.
-									UIData data = JsonConvert.DeserializeObject<UIData>(content);
-									UIReceiver.currentBools = new List<bool> (data.bools);
-									UIReceiver.currentInts = new List<int> (data.ints);
-									UIReceiver.currentFloats = new List<float> (data.floats);
-									UniversalDebug("Data Received!");
-									//connect.udpReceiver.dataMessages.Dequeue(); // Actually remove from the queue since it has been processed.
-								}
-								// else
-								//	UniversalDebug("Header Not Recognized!", GH_RuntimeMessageLevel.Warning);
-							} else
-								UniversalDebug("Data not Received!", GH_RuntimeMessageLevel.Warning);
-						} else
-							UniversalDebug("Improper Message!", GH_RuntimeMessageLevel.Warning);
-					} else
-						UniversalDebug("No data received.");
-				} catch {
-					UniversalDebug("Error Processing Data.", GH_RuntimeMessageLevel.Error);
-				}
-			} else {
-				// If connection disabled - reset memoty.
-				UIReceiver.lastInputs = string.Empty;
-				UIReceiver.currentBools = new List<bool>();
-				UIReceiver.currentInts = new List<int>();
-				UIReceiver.currentFloats = new List<float>();
-				UniversalDebug("Set 'Send' on true in HoloFab 'HoloConnect'", GH_RuntimeMessageLevel.Warning);
-			}
-			//////////////////////////////////////////////////////
-			// Output.
-			DA.SetDataList(0, UIReceiver.currentBools);
-			DA.SetDataList(1, UIReceiver.currentInts);
-			DA.SetDataList(2, UIReceiver.currentFloats);
-			#if DEBUG
-			DA.SetData(3, this.debugMessages[this.debugMessages.Count-1]);
-			#endif
-            
-			//// Expire Solution.
-			//if (connect.status) {
-			//	GH_Document document = this.OnPingDocument();
-			//	if (document != null)
-			//		document.ScheduleSolution(UIReceiver.expireDelay, ScheduleCallback);
-			//}
-		}
-		private void ScheduleCallback(GH_Document document) {
-			ExpireSolution(false);
-		}
 		//////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		/// Initializes a new instance of the UIReceiver class.
-		/// Each implementation of GH_Component must provide a public
-		/// constructor without any arguments.
-		/// Category represents the Tab in which the component will appear,
-		/// Subcategory the panel. If you use non-existing tab or panel names,
-		/// new tabs/panels will automatically be created.
-		/// </summary>
 		public UIReceiver()
-			: base("UI Receiver", "UI",
-			       "Receieves Incoming data from the User Interface of AR device",
-			       "HoloFab", "UserInterface") {}
-		/// <summary>
-		/// Provides an Icon for every component that will be visible in the User Interface.
-		/// Icons need to be 24x24 pixels.
-		/// </summary>
-		protected override System.Drawing.Bitmap Icon {
-			get { return Properties.Resources.HoloFab_UIReceiver; }
+			: base(componentName, componentNickname, componentDescription,
+				  componentCategory, componentSubCategory) {
 		}
-		/// <summary>
-		/// Each component must have a unique Guid to identify it.
-		/// It is vital this Guid doesn't change otherwise old ghx files
-		/// that use the old ID will partially fail during loading.
-		/// </summary>
-		public override Guid ComponentGuid {
-			get { return new Guid("ac5f5de3-cdf2-425a-b435-c97b718e1a09"); }
+        #endregion
+        //////////////////////////////////////////////////////////////////////////
+        protected override List<string> validHeaders { get { return new List<string>() { "UIDATA" }; } }
+        #region MAIN
+        // - currents
+        private List<bool> currentBools = new List<bool>();
+		private List<int> currentInts = new List<int>();
+		private List<float> currentFloats = new List<float>();
+        private Queue<string> receiveQueue = new Queue<string>();
+        //////////////////////////////////////////////////////////////////////////
+        public override bool GetInputs(IGH_DataAccess DA) {
+			return true;
 		}
-		/// <summary>
-		/// Registers all the input parameters for this component.
-		/// </summary>
+		public override void Solve() {
+			this.NetworkReceiveSolve();
+		}
+		public override void ProcessNetworkInput(string currentData) {
+            // If any new data received - process it.
+            UIData data = JsonConvert.DeserializeObject<UIData>(currentData);
+            this.currentBools = new List<bool>(data.bools);
+            this.currentInts = new List<int>(data.ints);
+            this.currentFloats = new List<float>(data.floats);
+            UniversalDebug("Data Received!");
+        }
+        public override void Reset() {
+			this.currentBools = new List<bool>();
+			this.currentInts = new List<int>();
+			this.currentFloats = new List<float>();
+			base.ResetReceive();
+        }
+        public override void SetOutputs(IGH_DataAccess DA) {
+			DA.SetDataList(0, this.currentBools);
+			DA.SetDataList(1, this.currentInts);
+			DA.SetDataList(2, this.currentFloats);
+		}
+        //////////////////////////////////////////////////////////////////////////
 		protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {
-			pManager.AddGenericParameter("Connect", "Cn", "Connection object from Holofab 'Create Connection' component.", GH_ParamAccess.item);
+			base.RegisterInputParams(pManager);
 		}
-		/// <summary>
-		/// Registers all the output parameters for this component.
-		/// </summary>
 		protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager) {
+			base.RegisterOutputParams(pManager);
 			pManager.AddBooleanParameter("Toggles", "T", "Boolean values coming from UI.", GH_ParamAccess.list);
 			pManager.AddIntegerParameter("Counters", "C", "Integer values coming from UI.", GH_ParamAccess.list);
 			pManager.AddNumberParameter("Sliders", "S", "Float values coming from UI.", GH_ParamAccess.list);
-			#if DEBUG
-			pManager.AddTextParameter("Debug", "D", "Debug console.", GH_ParamAccess.item);
-			#endif
 		}
-		////////////////////////////////////////////////////////////////////////
-		// Common way to Communicate messages.
-		private void UniversalDebug(string message, GH_RuntimeMessageLevel messageType = GH_RuntimeMessageLevel.Remark) {
-			#if DEBUG
-			DebugUtilities.UniversalDebug(this.sourceName, message, ref UIReceiver.debugMessages);
-			#endif
-			this.AddRuntimeMessage(messageType, message);
-		}
+        #endregion
 	}
-	*/
 }

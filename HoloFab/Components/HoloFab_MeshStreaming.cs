@@ -74,8 +74,9 @@ namespace HoloFab {
 				this.connect.QueueUpData(this.communicatorID, bytes);
 				this.connect.RefreshOwner();
 			}
-		} 
-		public override void SetOutputs(IGH_DataAccess DA) { }
+		}
+		public override void Reset() { }
+        public override void SetOutputs(IGH_DataAccess DA) { }
         //////////////////////////////////////////////////////////////////////////
 		protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {
 			base.RegisterInputParams(pManager);
