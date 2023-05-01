@@ -31,10 +31,8 @@ namespace HoloFab {
 		//// If messages in queues - expire solution after this time.
 		//private static int expireDelay = 40;
 		// - debugging
-		#if DEBUG
-		protected abstract string sourceName { get; }
+		protected virtual string sourceName { get; }
 		public List<string> debugMessages = new List<string>();
-		#endif
 		// TODO: doesn't seem to be saved?
 		protected SourceType communicationProtocolType = SourceType.UDP;
 		protected abstract SourceCommunicationType communicationType { get; }

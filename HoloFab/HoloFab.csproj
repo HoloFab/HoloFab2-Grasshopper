@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\HoloFabConnectedComponent.cs" />
+    <Compile Include="Components\HoloFab_MarkedPointReceiver.cs" />
     <Compile Include="General\Scripts\Network\NetworkAgent.cs" />
     <Compile Include="General\Scripts\Network\Specific\ClientAcknowledger.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

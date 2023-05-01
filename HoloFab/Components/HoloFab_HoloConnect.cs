@@ -95,10 +95,10 @@ namespace HoloFab {
 			}
 		}
 		private void ScheduleCallback(GH_Document document) {
-			if (this.deviceFinder.flagUpdate) {
+			if (this.deviceFinder.FlagChanged) {
 				ExpireSolution(true);
                 Instances.InvalidateCanvas();
-				this.deviceFinder.flagUpdate = false;
+				this.deviceFinder.FlagChanged = false;
             } else
 				ExpireSolution(false);
         }
